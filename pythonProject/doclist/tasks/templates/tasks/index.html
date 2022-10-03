@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doclist</title>
+    <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+</head>
+<body>
+    <h1>Doclist</h1>
+    <div id="collections">
+
+        {% for collection in collections %}
+            <h2> {{ collection.name|safe }}</h2>
+        {% endfor %}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <input type="text" name="collection-name">
+        <button hx-post="{% url 'add-collection' %}"
+                hx-swap="beforeend"
+                hx-target="#collections"
+                type="submit"> add </button>
+
+    </form>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <input type ="text" name="task-description">
+        <button hx-post="{% url 'add-task' %}"
+                hx-target="#tasks"
+                hx-swap="beforeend"
+                type="submit"> add </button>
+    </form>
+
+    <div id="tasks">
+
+        {% for task in tasks %}
+            <p> {{ task.description }}</p>
+        {% endfor %}
+
+
+    </div>
+
+
+<script>
+    document.body.addEventListener("htmx:responseError", function(evt) {
+        alert(evt.detail.xhr.responseText);
+    })
+</script>
+
+</body>
+
+</html>
