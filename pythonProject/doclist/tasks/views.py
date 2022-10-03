@@ -1,13 +1,17 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.html import escape
 
 from tasks.models import  Collection, Task
 # Create your views here.
 def index(request):
-    context = {}
 
-    #collection = Collection.get_default_collection()
+    context = {}
+    collection_slug = request.GET.get("collection")
+    collection = Collection.get_default_collection()
+
+    if collection_slug:
+        collection = get_object_or_404(Collection, slug=collection_slug)
 
     context["collections"] = Collection.objects.order_by("slug")
     context["tasks"] = collection.task_set.order_by("description")
@@ -29,3 +33,7 @@ def add_task(request):
     Task.objects.create(description=description, collection=collection)
 
     return HttpResponse(description)
+
+def get_tasks(request, collection_pk):
+    collection = get_object_or_404(Collection, pk=collection_pk)
+    return collection.task_set.order_by("descrption")
